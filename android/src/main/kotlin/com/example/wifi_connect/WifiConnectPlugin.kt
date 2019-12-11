@@ -73,7 +73,6 @@ class WifiConnectPlugin(registrar: Registrar) : ActivityResultListener {
         val wifiEnableTimeoutMillis = call.argument<Int>("wifiEnableTimeoutMillis")!!.toLong()
 
         if (!wifi.isWifiEnabled) {
-            println("!!!HERE!!!")
             wifi.isWifiEnabled = true
 
             val timeLimit = System.currentTimeMillis() + wifiEnableTimeoutMillis

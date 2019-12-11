@@ -12,7 +12,7 @@ import android.util.Log
 class ConnectionManager(val ctx: Context, val wifi: WifiManager) {
     fun scanAndConnect(ssid: String, password: String, onDone: (WifiConnectStatus) -> Unit) {
         scan { results ->
-            Log.d(TAG, "Scan: ${results.map { it.SSID }}")
+            Log.d(TAG, "Scan results: ${results.map { it.SSID }}")
 
             for (it in results) {
                 if (ssid == it.SSID) {

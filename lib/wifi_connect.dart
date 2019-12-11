@@ -18,12 +18,14 @@ enum WifiConnectStatus {
 class WifiConnect {
   static const channel = const MethodChannel('wifi_connect');
 
+  /// Get the currently connected WiFi AP's SSID
+  ///
+  /// Returns empty string [''] if device is not connected to any WiFi AP.
   static Future<String> getConnectedSSID() async {
-    return await channel.invokeMethod('getConnectedSSID');
+    return await channel.invokeMethod('getConnectedSSID') ?? '';
   }
 
-  static Future<WifiConnectStatus> connect(
-    BuildContext context, {
+  static Future<WifiConnectStatus> connect(BuildContext context, {
     @required String ssid,
     @required String password,
     ShowRationale showLocationPermissionRationale,
