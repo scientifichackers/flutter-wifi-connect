@@ -9,10 +9,12 @@ mixin WifiScannerMixin<T extends StatefulWidget> implements State<T> {
   }) async {
     while (true) {
       var newValue = await WifiConnect.getConnectedSSID();
-      if (connectedSSID == newValue || !mounted) continue;
-      setState(() {
-        connectedSSID = newValue;
-      });
+      if (!mounted) return;
+      if (connectedSSID != newValue) {
+        setState(() {
+          connectedSSID = newValue;
+        });
+      }
       await Future.delayed(period);
     }
   }
