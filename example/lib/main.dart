@@ -26,7 +26,7 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WifiScannerMixin<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -37,29 +37,21 @@ class _MyAppState extends State<MyApp> {
           onPressed: connect,
         ),
         Divider(),
-        Text("Connected to: $connectedTo"),
+        if (connectedSSID.isEmpty)
+          Text('Wifi is disconnected.')
+        else
+          Text("Connected to '$connectedSSID'"),
         Text('Connect success: $connectSuccess'),
       ],
     );
   }
 
   String connectSuccess;
-  String connectedTo;
 
   @override
   void initState() {
     super.initState();
-    statusListener();
-  }
-
-  Future<void> statusListener() async {
-    while (true) {
-      var _connectedTo = await WifiConnect.getConnectedSSID();
-      setState(() {
-        connectedTo = _connectedTo;
-      });
-      await Future.delayed(Duration(seconds: 1));
-    }
+    startWifiScanner();
   }
 
   void showMessage(String msg) {

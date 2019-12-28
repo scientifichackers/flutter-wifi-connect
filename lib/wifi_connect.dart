@@ -5,6 +5,8 @@ import 'package:use_location/use_location.dart';
 
 import 'src/show_rationale.dart' as sr;
 
+export 'src/wifi_scanner_mixin.dart';
+
 enum WifiConnectStatus {
   ok,
   failed,
@@ -25,7 +27,8 @@ class WifiConnect {
     return await channel.invokeMethod('getConnectedSSID') ?? '';
   }
 
-  static Future<WifiConnectStatus> connect(BuildContext context, {
+  static Future<WifiConnectStatus> connect(
+    BuildContext context, {
     @required String ssid,
     @required String password,
     ShowRationale showLocationPermissionRationale,

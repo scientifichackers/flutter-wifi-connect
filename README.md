@@ -1,14 +1,51 @@
-# wifi_connect
+# Flutter WiFi Connect
 
-A new flutter plugin project.
+Easily connect to a specified WiFi AP programmatically, using this plugin.
 
-## Getting Started
+```dart
+import 'package:wifi_connect/wifi_connect.dart';
+```
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+```dart
+var status = WifiConnect.connect(context, 'ssid', 'password');
+print('Connection status: $status');
+```
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+It's that simple. No fussing with permissions, enabling WiFi, location and all the boring stuff.
+
+---
+
+```dart
+var connectedTo = WifiConnect.getConnectedSSID();
+print('Connected to: $connectedTo');
+```
+
+--- 
+
+And behold, the mighty `WifiScannerMixin`!
+
+```dart
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WifiScannerMixin<MyApp> {
+ @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: Text("Connected to '$connectedSSID'"),
+        )       
+      )   
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    startWifiScanner();
+  }
+}
+```
