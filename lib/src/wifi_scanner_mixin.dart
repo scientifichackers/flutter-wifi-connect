@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:wifi_connect/wifi_connect.dart';
 
+import 'dialogs.dart';
+
 mixin WifiScannerMixin<T extends StatefulWidget> implements State<T> {
   var connectedSSID = '';
 
@@ -8,11 +10,10 @@ mixin WifiScannerMixin<T extends StatefulWidget> implements State<T> {
 
   Future<void> startWifiScanner({
     Duration period: const Duration(seconds: 1),
+    WifiConnectDialogs dialogs,
   }) async {
-    var stream = await WifiConnect.getConnectedSSIDListener(
-      context,
-      period: period,
-    );
+    WifiConnect.useLocation(context);
+    var stream = await WifiConnect.getConnectedSSIDListener(period: period);
     await for (var value in stream) {
       if (!mounted) return;
       if (connectedSSID != value) {

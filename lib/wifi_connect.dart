@@ -13,19 +13,6 @@ export 'src/wifi_scanner_mixin.dart';
 class WifiConnect {
   static const channel = const MethodChannel('wifi_connect');
 
-  static Future<Stream<String>> getConnectedSSIDListener(
-    BuildContext context, {
-    WifiConnectDialogs dialogs,
-    Duration period: const Duration(seconds: 1),
-  }) async {
-    await useLocation(context, dialogs: dialogs);
-    return PluginScaffold.createStream(
-      channel,
-      'connectedSSID',
-      period.inMilliseconds,
-    );
-  }
-
   /// Get the currently connected WiFi AP's SSID
   ///
   /// Returns empty string [''] if device is not connected to any WiFi AP.
@@ -66,6 +53,16 @@ class WifiConnect {
     if (idx != WifiConnectStatus.ok.index) {
       throw WifiConnectException(WifiConnectStatus.values[idx]);
     }
+  }
+
+  static Future<Stream<String>> getConnectedSSIDListener({
+    Duration period: const Duration(seconds: 1),
+  }) async {
+    return PluginScaffold.createStream(
+      channel,
+      'connectedSSID',
+      period.inMilliseconds,
+    );
   }
 
   static Future<void> useLocation(
