@@ -10,7 +10,7 @@ mixin WifiScannerMixin<T extends StatefulWidget> implements State<T> {
     Duration period: const Duration(seconds: 1),
   }) async {
     while (true) {
-      var newValue = await WifiConnect.getConnectedSSID();
+      var newValue = await WifiConnect.getConnectedSSID(context);
       if (!mounted) return;
       if (connectedSSID != newValue) {
         setState(() {

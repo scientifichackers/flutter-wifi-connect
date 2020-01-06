@@ -13,6 +13,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.util.Random
 
 const val TAG = "WifiConnectPlugin"
+const val POLL_INTERVAL_MS = 500.toLong()
 
 enum class WifiConnectStatus {
     OK,
@@ -58,38 +59,65 @@ class WifiConnectPlugin(registrar: Registrar) : ActivityResultListener {
     }
 
     fun getConnectedSSID(call: MethodCall, result: Result) {
-        val conn = wifi.connectionInfo
-        if (conn.networkId == -1 || conn.ssid == "<unknown ssid>") {
-            result.success(null)
-        } else {
-            val ssid = conn.ssid
-            result.success(ssid.substring(1, ssid.length - 1))
+        result.success(getConnectedSSID())
+    }
+
+    fun getConnectedSSID(): String? {
+        val info = wifi.connectionInfo
+        val ssid = info.ssid
+        if (info.networkId == -1 || ssid == "<unknown ssid>") {
+            return null
         }
+        return ssid.substring(1, ssid.length - 1)
     }
 
     fun connect(call: MethodCall, result: Result) {
         val ssid = call.argument<String>("ssid")!!
         val password = call.argument<String>("password")!!
-        val wifiEnableTimeoutMillis = call.argument<Int>("wifiEnableTimeoutMillis")!!.toLong()
+        val timeLimitMillis = call.argument<Long>("timeLimitMillis")!!
 
         if (!wifi.isWifiEnabled) {
             wifi.isWifiEnabled = true
-
-            val timeLimit = System.currentTimeMillis() + wifiEnableTimeoutMillis
-            val sleepInterval = wifiEnableTimeoutMillis / 10
-            while (!wifi.isWifiEnabled && System.currentTimeMillis() < timeLimit) {
-                Thread.sleep(sleepInterval)
-            }
-
-            if (!wifi.isWifiEnabled) {
+            if (!waitForWifiEnable(timeLimitMillis)) {
                 result.success(WifiConnectStatus.WIFI_DISABLED.ordinal)
                 return
             }
         }
 
         conn.scanAndConnect(ssid, password) { status ->
-            trySend(result) { status.ordinal }
+            val connectStatus =
+                if (status == WifiConnectStatus.OK) {
+                    if (waitForWifiConnect(timeLimitMillis, ssid)) {
+                        status
+                    } else {
+                        WifiConnectStatus.FAILED
+                    }
+                } else {
+                    status
+                }
+
+            trySend(result) { connectStatus.ordinal }
         }
+    }
+
+    fun waitForWifiConnect(timeLimitMillis: Long, ssid: String): Boolean {
+        while (System.currentTimeMillis() < timeLimitMillis) {
+            if (getConnectedSSID() == ssid) {
+                return true
+            }
+            Thread.sleep(POLL_INTERVAL_MS)
+        }
+        return false
+    }
+
+    fun waitForWifiEnable(timeLimitMillis: Long): Boolean {
+        while (System.currentTimeMillis() < timeLimitMillis) {
+            if (wifi.isWifiEnabled) {
+                return true
+            }
+            Thread.sleep(POLL_INTERVAL_MS)
+        }
+        return false
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {

@@ -31,6 +31,14 @@ class _MyAppState extends State<MyApp> with WifiScannerMixin<MyApp> {
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
+        TextField(
+          controller: ssidControl,
+          decoration: InputDecoration(labelText: 'SSID'),
+        ),
+        TextField(
+          controller: passwordControl,
+          decoration: InputDecoration(labelText: 'Password'),
+        ),
         Divider(),
         RaisedButton(
           child: Text("connect"),
@@ -41,12 +49,14 @@ class _MyAppState extends State<MyApp> with WifiScannerMixin<MyApp> {
           Text('Wifi is disconnected.')
         else
           Text("Connected to '$connectedSSID'"),
-        Text('Connect success: $connectSuccess'),
+        Text('Status: $connectSuccess'),
       ],
     );
   }
 
   String connectSuccess;
+  var ssidControl = TextEditingController(text: 'Gecko1234');
+  var passwordControl = TextEditingController(text: 'passwordz');
 
   @override
   void initState() {
@@ -69,13 +79,20 @@ class _MyAppState extends State<MyApp> with WifiScannerMixin<MyApp> {
     setState(() {
       connectSuccess = '...';
     });
-    var status = await WifiConnect.connect(
-      context,
-      ssid: 'Gecko1234',
-      password: 'password',
-    );
+    try {
+      await WifiConnect.connect(
+        context,
+        ssid: ssidControl.text,
+        password: passwordControl.text,
+      );
+    } on WifiConnectException catch (e) {
+      setState(() {
+        connectSuccess = e.status.toString();
+      });
+      return;
+    }
     setState(() {
-      connectSuccess = status.toString();
+      connectSuccess = 'Success!';
     });
   }
 }

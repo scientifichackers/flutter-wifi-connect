@@ -7,16 +7,15 @@ import 'package:wifi_connect/wifi_connect.dart';
 ```
 
 ```dart
-var status = WifiConnect.connect(context, 'ssid', 'password');
-print('Connection status: $status');
+WifiConnect.connect(context, 'ssid', 'password');
 ```
 
-It's that simple. No fussing with permissions, enabling WiFi, location and all the boring stuff.
+It's that simple. No fussing with permissions, enabling WiFi, location and all that boring stuff.
 
 ---
 
 ```dart
-var connectedTo = WifiConnect.getConnectedSSID();
+var connectedTo = WifiConnect.getConnectedSSID(context);
 print('Connected to: $connectedTo');
 ```
 
