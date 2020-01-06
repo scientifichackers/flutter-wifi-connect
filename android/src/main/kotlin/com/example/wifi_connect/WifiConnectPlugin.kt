@@ -6,11 +6,14 @@ import android.net.wifi.WifiManager
 import android.provider.Settings
 import com.pycampers.plugin_scaffold.createPluginScaffold
 import com.pycampers.plugin_scaffold.trySend
+import io.flutter.plugin.common.EventChannel.EventSink
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.util.Random
+import java.util.Timer
+import kotlin.concurrent.timer
 
 const val TAG = "WifiConnectPlugin"
 const val POLL_INTERVAL_MS = 500.toLong()
@@ -58,15 +61,28 @@ class WifiConnectPlugin(registrar: Registrar) : ActivityResultListener {
         }
     }
 
+    var timers = mutableMapOf<Int, Timer>()
+
+    fun connectedSSIDOnListen(id: Int, args: Any?, sink: EventSink) {
+        timers[id] = timer(
+            period = (args as Int).toLong(),
+            action = { sink.success(getConnectedSSID()) }
+        )
+    }
+
+    fun connectedSSIDOnCancel(id: Int, args: Any?) {
+        timers.remove(id)?.cancel()
+    }
+
     fun getConnectedSSID(call: MethodCall, result: Result) {
         result.success(getConnectedSSID())
     }
 
-    fun getConnectedSSID(): String? {
+    fun getConnectedSSID(): String {
         val info = wifi.connectionInfo
         val ssid = info.ssid
         if (info.networkId == -1 || ssid == "<unknown ssid>") {
-            return null
+            return ""
         }
         return ssid.substring(1, ssid.length - 1)
     }
