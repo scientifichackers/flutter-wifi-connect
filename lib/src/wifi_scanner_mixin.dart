@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
 import 'package:wifi_connect/wifi_connect.dart';
 
@@ -12,7 +14,10 @@ mixin WifiScannerMixin<T extends StatefulWidget> implements State<T> {
     Duration period: const Duration(seconds: 1),
     WifiConnectDialogs dialogs,
   }) async {
-    WifiConnect.useLocation(context);
+    if (Platform.isAndroid) {
+      WifiConnect.useLocation(context, dialogs: dialogs);
+    }
+
     var stream = await WifiConnect.getConnectedSSIDListener(period: period);
     await for (var value in stream) {
       if (!mounted) return;

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -69,6 +71,8 @@ class WifiConnect {
     BuildContext context, {
     WifiConnectDialogs dialogs,
   }) async {
+    if (!Platform.isAndroid) return;
+
     dialogs ??= WifiConnectDialogs();
     var locationStatus = await UseLocation.useLocation(
       context,
@@ -76,6 +80,7 @@ class WifiConnect {
       showPermissionSettingsRationale: dialogs.locationPermissionSettings,
       showEnableSettingsRationale: dialogs.enableLocationSettings,
     );
+
     if (locationStatus != UseLocationStatus.ok) {
       throw WifiConnectException(
         WifiConnectStatus.values[locationStatus.index + 3],
