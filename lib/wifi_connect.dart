@@ -57,9 +57,9 @@ class WifiConnect {
     }
   }
 
-  static Future<Stream<String>> getConnectedSSIDListener({
+  static Stream<String> getConnectedSSIDListener({
     Duration period: const Duration(seconds: 1),
-  }) async {
+  }) {
     return PluginScaffold.createStream(
       channel,
       'connectedSSID',

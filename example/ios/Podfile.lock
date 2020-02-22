@@ -1,0 +1,35 @@
+PODS:
+  - Flutter (1.0.0)
+  - plugin_scaffold (0.0.1):
+    - Flutter
+  - use_location (0.0.1):
+    - Flutter
+  - wifi_connect (0.0.1):
+    - Flutter
+    - plugin_scaffold
+
+DEPENDENCIES:
+  - Flutter (from `.symlinks/flutter/ios`)
+  - plugin_scaffold (from `.symlinks/plugins/plugin_scaffold/ios`)
+  - use_location (from `.symlinks/plugins/use_location/ios`)
+  - wifi_connect (from `.symlinks/plugins/wifi_connect/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: ".symlinks/flutter/ios"
+  plugin_scaffold:
+    :path: ".symlinks/plugins/plugin_scaffold/ios"
+  use_location:
+    :path: ".symlinks/plugins/use_location/ios"
+  wifi_connect:
+    :path: ".symlinks/plugins/wifi_connect/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  plugin_scaffold: e7c52bc1cfb6e672959f798dfc9dea8dff55daeb
+  use_location: 1f00b259339233d824c10f61134fe071b1f5fa7f
+  wifi_connect: 476baa55360b0f63ac6527705d2b4d28eb900591
+
+PODFILE CHECKSUM: 1684eb5a3603bbff42054fc5031250e7ae86cfe4
+
+COCOAPODS: 1.8.4

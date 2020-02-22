@@ -18,7 +18,7 @@ mixin WifiScannerMixin<T extends StatefulWidget> implements State<T> {
       WifiConnect.useLocation(context, dialogs: dialogs);
     }
 
-    var stream = await WifiConnect.getConnectedSSIDListener(period: period);
+    var stream = WifiConnect.getConnectedSSIDListener(period: period);
     await for (var value in stream) {
       if (!mounted) return;
       if (connectedSSID != value) {

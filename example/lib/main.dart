@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wifi_connect/wifi_connect.dart';
 
-void main() => runApp(Wrapper(child: MyApp()));
+void main() {
+  runApp(Wrapper(child: MyApp()));
+}
 
 class Wrapper extends StatelessWidget {
   final Widget child;
@@ -55,8 +57,8 @@ class _MyAppState extends State<MyApp> with WifiScannerMixin<MyApp> {
   }
 
   String connectSuccess;
-  var ssidControl = TextEditingController(text: 'Gecko1234');
-  var passwordControl = TextEditingController(text: 'passwordz');
+  var ssidControl = TextEditingController(text: 'Jaaga Startup WiFi');
+  var passwordControl = TextEditingController(text: 'jaagajaaga');
 
   @override
   void initState() {
@@ -86,11 +88,13 @@ class _MyAppState extends State<MyApp> with WifiScannerMixin<MyApp> {
         password: passwordControl.text,
       );
     } on WifiConnectException catch (e) {
+      print('error: $e');
       setState(() {
         connectSuccess = e.status.toString();
       });
       return;
     }
+    print('sucess!');
     setState(() {
       connectSuccess = 'Success!';
     });
