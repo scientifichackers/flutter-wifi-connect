@@ -42,6 +42,17 @@ class _MyAppState extends State<MyApp> with WifiScannerMixin<MyApp> {
           decoration: InputDecoration(labelText: 'Password'),
         ),
         Divider(),
+        CheckboxListTile(
+          title: Text('hidden'),
+          value: hidden,
+          controlAffinity: ListTileControlAffinity.leading,
+          onChanged: (value) {
+            setState(() {
+              hidden = value;
+            });
+          },
+        ),
+        Divider(),
         RaisedButton(
           child: Text("connect"),
           onPressed: connect,
@@ -57,6 +68,7 @@ class _MyAppState extends State<MyApp> with WifiScannerMixin<MyApp> {
   }
 
   String connectSuccess;
+  var hidden = false;
   var ssidControl = TextEditingController(text: 'Gecko1234');
   var passwordControl = TextEditingController(text: 'password');
 
@@ -86,8 +98,8 @@ class _MyAppState extends State<MyApp> with WifiScannerMixin<MyApp> {
         context,
         ssid: ssidControl.text,
         password: passwordControl.text,
-        hidden: true,
-        securityType: SecurityType.wpa,
+        hidden: hidden,
+        securityType: hidden ? SecurityType.wpa : SecurityType.auto,
       );
     } on WifiConnectException catch (e) {
       print('error: $e');
