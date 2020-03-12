@@ -12,6 +12,28 @@ import 'src/dialogs.dart';
 export 'src/exceptions.dart';
 export 'src/wifi_scanner_mixin.dart';
 
+enum SecurityType {
+  wpa, wep, open, auto
+}
+
+String getCapabilities(SecurityType securityType) {
+  String ret = "";
+  switch (securityType) {
+    case SecurityType.wpa:
+      ret = "WPA";
+      break;
+    case SecurityType.wep:
+      ret = "WEP";
+      break;
+    case SecurityType.open:
+      ret = "OPEN";
+      break;
+    default:
+      break;
+  }
+  return ret;
+}
+
 class WifiConnect {
   static const channel = const MethodChannel('wifi_connect');
 
@@ -30,9 +52,13 @@ class WifiConnect {
     BuildContext context, {
     @required String ssid,
     @required String password,
+    bool hidden = false,
+    SecurityType securityType = SecurityType.auto,
     WifiConnectDialogs dialogs,
-    Duration timeout: const Duration(seconds: 10),
+    Duration timeout: const Duration(seconds: 15),
   }) async {
+    assert (!hidden || securityType != SecurityType.auto);
+
     var timeLimit = DateTime.now().add(timeout);
 
     dialogs ??= WifiConnectDialogs();
@@ -41,6 +67,8 @@ class WifiConnect {
     var args = {
       'ssid': ssid ?? '',
       'password': password ?? '',
+      'hidden': hidden,
+      'capabilities': getCapabilities(securityType),
       'timeLimitMillis': timeLimit.millisecondsSinceEpoch,
     };
     var idx = await channel.invokeMethod("connect", args);

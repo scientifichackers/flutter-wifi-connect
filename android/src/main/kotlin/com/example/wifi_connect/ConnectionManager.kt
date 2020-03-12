@@ -10,17 +10,24 @@ import android.net.wifi.WifiManager
 import android.util.Log
 
 class ConnectionManager(val ctx: Context, val wifi: WifiManager) {
-    fun scanAndConnect(ssid: String, password: String, onDone: (WifiConnectStatus) -> Unit) {
+    fun scanAndConnect(
+        ssid: String,
+        password: String,
+        hidden: Boolean,
+        capabilities: String,
+        onDone: (WifiConnectStatus) -> Unit
+    ) {
+        if (hidden) {
+            onDone(connect(ssid, password, capabilities, hidden = true))
+            return
+        }
+
         scan { results ->
             Log.d(TAG, "Scan results: ${results.map { it.SSID }}")
 
             for (it in results) {
                 if (ssid == it.SSID) {
-                    if (connect(it, password, ssid)) {
-                        onDone(WifiConnectStatus.OK)
-                    } else {
-                        onDone(WifiConnectStatus.FAILED)
-                    }
+                    onDone(connect(ssid, password, it.capabilities))
                     return@scan
                 }
             }
@@ -44,7 +51,12 @@ class ConnectionManager(val ctx: Context, val wifi: WifiManager) {
         wifi.startScan()
     }
 
-    fun connect(result: ScanResult, password: String, ssid: String): Boolean {
+    fun connect(
+        ssid: String,
+        password: String,
+        capabilities: String,
+        hidden: Boolean = false
+    ): WifiConnectStatus {
         //Make new configuration
         var conf = WifiConfiguration()
 
@@ -57,12 +69,11 @@ class ConnectionManager(val ctx: Context, val wifi: WifiManager) {
 
         // Quote ssid and password
         conf.SSID = String.format("\"%s\"", ssid)
+        conf.hiddenSSID = hidden
 
         getExistingWifiConfig(conf.SSID)?.let {
             wifi.removeNetwork(it.networkId)
         }
-
-        val capabilities = result.capabilities
 
         // appropriate ciper is need to set according to security type used
         if (
@@ -117,17 +128,23 @@ class ConnectionManager(val ctx: Context, val wifi: WifiManager) {
 
         // if network not added return false
         if (newNetwork == -1) {
-            return false
+            return WifiConnectStatus.FAILED
         }
 
         // disconnect current network
         val disconnect = wifi.disconnect()
         if (!disconnect) {
-            return false
+            return WifiConnectStatus.FAILED
         }
 
         // enable new network
-        return wifi.enableNetwork(newNetwork, true)
+        val success = wifi.enableNetwork(newNetwork, true)
+
+        return if (success) {
+            WifiConnectStatus.OK
+        } else {
+            WifiConnectStatus.FAILED
+        }
     }
 
     fun getExistingWifiConfig(ssid: String): WifiConfiguration? {

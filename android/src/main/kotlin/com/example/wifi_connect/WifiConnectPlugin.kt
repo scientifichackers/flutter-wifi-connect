@@ -90,6 +90,8 @@ class WifiConnectPlugin(registrar: Registrar) : ActivityResultListener {
     fun connect(call: MethodCall, result: Result) {
         val ssid = call.argument<String>("ssid")!!
         val password = call.argument<String>("password")!!
+        val hidden = call.argument<Boolean>("hidden")!!
+        val capabilities = call.argument<String>("capabilities")!!
         val timeLimitMillis = call.argument<Long>("timeLimitMillis")!!
 
         if (!wifi.isWifiEnabled) {
@@ -100,10 +102,11 @@ class WifiConnectPlugin(registrar: Registrar) : ActivityResultListener {
             }
         }
 
-        conn.scanAndConnect(ssid, password) { status ->
+        conn.scanAndConnect(ssid, password, hidden, capabilities) { status ->
             val connectStatus =
                 if (status == WifiConnectStatus.OK) {
-                    if (waitForWifiConnect(timeLimitMillis, ssid)) {
+                    val connected = waitForWifiConnect(timeLimitMillis, ssid)
+                    if (connected) {
                         status
                     } else {
                         WifiConnectStatus.FAILED
@@ -118,7 +121,8 @@ class WifiConnectPlugin(registrar: Registrar) : ActivityResultListener {
 
     fun waitForWifiConnect(timeLimitMillis: Long, ssid: String): Boolean {
         while (System.currentTimeMillis() < timeLimitMillis) {
-            if (getConnectedSSID() == ssid) {
+            val connectedSSID = getConnectedSSID()
+            if (connectedSSID == ssid) {
                 return true
             }
             Thread.sleep(POLL_INTERVAL_MS)

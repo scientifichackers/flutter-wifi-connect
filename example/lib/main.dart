@@ -57,8 +57,8 @@ class _MyAppState extends State<MyApp> with WifiScannerMixin<MyApp> {
   }
 
   String connectSuccess;
-  var ssidControl = TextEditingController(text: 'Jaaga Startup WiFi');
-  var passwordControl = TextEditingController(text: 'jaagajaaga');
+  var ssidControl = TextEditingController(text: 'Gecko1234');
+  var passwordControl = TextEditingController(text: 'password');
 
   @override
   void initState() {
@@ -86,6 +86,8 @@ class _MyAppState extends State<MyApp> with WifiScannerMixin<MyApp> {
         context,
         ssid: ssidControl.text,
         password: passwordControl.text,
+        hidden: true,
+        securityType: SecurityType.wpa,
       );
     } on WifiConnectException catch (e) {
       print('error: $e');
