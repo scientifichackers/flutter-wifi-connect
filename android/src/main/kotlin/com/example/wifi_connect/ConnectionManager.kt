@@ -69,7 +69,6 @@ class ConnectionManager(val ctx: Context, val wifi: WifiManager) {
 
         // Quote ssid and password
         conf.SSID = String.format("\"%s\"", ssid)
-        conf.hiddenSSID = hidden
 
         getExistingWifiConfig(conf.SSID)?.let {
             wifi.removeNetwork(it.networkId)
@@ -119,6 +118,8 @@ class ConnectionManager(val ctx: Context, val wifi: WifiManager) {
                 newNetwork = conf.networkId
             }
         }
+
+        conf.hiddenSSID = hidden
 
         // If network not already in configured networks add new network
         if (newNetwork == -1) {
