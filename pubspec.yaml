@@ -12,8 +12,8 @@ dependencies:
     sdk: flutter
 
   plugin_scaffold: ^2.0.0
-  use_location: ^0.0.3
-  location: ^3.0.0
+  use_location: ^0.0.4
+  location: ^3.0.2
 #  use_location:
 #    path: ../use_location
 
